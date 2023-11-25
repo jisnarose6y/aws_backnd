@@ -31,5 +31,5 @@ variable "s3_bucket_name" {
   description = "Bucket for Jenkins Artifacts"
   type        = string
   default     = "terraform112455"
-  dynamodb_table = "terraform"
+  
 }
