@@ -32,7 +32,7 @@ resource "aws_instance" "jenkins_app" {
   ami                    = var.ami #Amazon Linux 2
   instance_type          = var.instance_type
   vpc_security_group_ids = [aws_security_group.jenkins-sg.id]
-  user_data              = var.user_data
+  # user_data              = var.user_data
   tags = {
     Name = "Jenkins Prod"
   }
