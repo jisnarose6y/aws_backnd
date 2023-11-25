@@ -40,6 +40,7 @@ resource "aws_instance" "jenkins_app" {
 
 resource "aws_s3_bucket" "jenkins_artifacts_s3" {
   bucket = var.s3_bucket_name
+  dynamodb_table = "terraform"
 
   tags = {
     Name = var.s3_bucket_name
