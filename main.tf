@@ -1,18 +1,47 @@
- terraform {
-    backend "s3" {
-      bucket = "terraform112455"
-     key = "terraform.tfstate"
-      region = "us-east-1"
-      dynamodb_table = "terraform"
-    }
- }
+resource "aws_security_group" "jenkins-sg" {
+  name   = "Jenkins Security Group"
+  vpc_id = var.vpc
 
 
-resource "aws_instance" "example"{
-    ami = "ami-026b57f3c383c2eec"
-    instance_type = var.instance_type
-    associate_public_ip_address = var.public_ip
-
-    tags = var.tags
+  #Allow traffic on port 8080
+  ingress {
+    description = "HTTP"
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  #Allow SSH from my IP
+  ingress {
+    description = "SSH"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  # Allow all outgoing traffic
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = -1
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 }
 
+resource "aws_instance" "jenkins_app" {
+  ami                    = var.ami #Amazon Linux 2
+  instance_type          = var.instance_type
+  vpc_security_group_ids = [aws_security_group.jenkins-sg.id]
+  user_data              = var.user_data
+  tags = {
+    Name = "Jenkins Prod"
+  }
+}
+
+resource "aws_s3_bucket" "jenkins_artifacts_s3" {
+  bucket = var.s3_bucket_name
+
+  tags = {
+    Name = var.s3_bucket_name
+  }
+}
